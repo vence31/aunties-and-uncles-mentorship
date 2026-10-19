@@ -1,0 +1,938 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="theme-color" content="#080808" id="theme-color">
+<title>Aunties & Uncles Community Mentorship — Application</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ===== VARIABLES (PI red/gold template) ===== */
+:root {
+  --bg:          #080808;
+  --bg2:         #0e0808;
+  --bg3:         #150c0c;
+  --glass:       rgba(20,8,8,0.85);
+  --glass-b:     rgba(200,50,50,0.12);
+  --glass-hi:    rgba(255,255,255,0.04);
+
+  --red:         #e03030;
+  --red2:        #ff5555;
+  --red-glow:    rgba(224,48,48,0.35);
+  --red-dim:     rgba(224,48,48,0.15);
+  --gold:        #d4a847;
+  --gold2:       #f0c96a;
+
+  --txt:         #f5eded;
+  --txt2:        rgba(245,237,237,0.65);
+  --txt3:        rgba(245,237,237,0.35);
+
+  --r-sm:   8px;
+  --r-md:   14px;
+  --r-lg:   22px;
+  --r-xl:   32px;
+
+  --ease:   cubic-bezier(0.25, 0.1, 0.25, 1);
+  --bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --spring: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+
+  --sh-sm:  0 2px 8px rgba(0,0,0,0.4);
+  --sh-md:  0 8px 24px rgba(0,0,0,0.5);
+  --sh-lg:  0 20px 60px rgba(0,0,0,0.6);
+  --sh-red: 0 0 30px rgba(224,48,48,0.2);
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior:smooth; }
+
+body {
+  font-family:'DM Sans',sans-serif;
+  background:var(--bg);
+  color:var(--txt);
+  min-height:100vh;
+  line-height:1.6;
+  position:relative;
+  overflow-x:hidden;
+}
+
+/* ===== 3D PARTICLE CANVAS ===== */
+#particleCanvas { position:fixed; inset:0; z-index:0; pointer-events:none; opacity:0.6; }
+
+/* ===== BACKGROUND MESH ===== */
+body::before {
+  content:''; position:fixed; inset:0;
+  background:
+    radial-gradient(ellipse at 15% 25%, rgba(220,40,40,0.18) 0%, transparent 45%),
+    radial-gradient(ellipse at 85% 75%, rgba(180,20,20,0.12) 0%, transparent 45%),
+    radial-gradient(ellipse at 50% 50%, rgba(120,10,10,0.08) 0%, transparent 60%);
+  z-index:0; animation:meshPulse 12s ease-in-out infinite alternate;
+}
+@keyframes meshPulse { 0%{opacity:.7;transform:scale(1);} 100%{opacity:1;transform:scale(1.15);} }
+
+/* ===== NOISE OVERLAY ===== */
+body::after {
+  content:''; position:fixed; inset:0;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.04'/%3E%3C/svg%3E");
+  z-index:1; pointer-events:none;
+}
+
+/* ===== LAYOUT ===== */
+.layer { position:relative; z-index:2; }
+
+/* ===== STICKY HEADER ===== */
+.hdr {
+  position:sticky; top:0; z-index:200;
+  background:rgba(8,4,4,0.9);
+  backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px);
+  border-bottom:1px solid var(--glass-b);
+  box-shadow:0 1px 0 rgba(224,48,48,0.08), var(--sh-sm);
+}
+.hdr-inner { max-width:900px; margin:0 auto; padding:0 28px; height:68px; display:flex; align-items:center; justify-content:space-between; }
+
+.brand-wrap {
+  width:46px; height:46px;
+  background:linear-gradient(135deg, var(--red), #ff6060);
+  border-radius:14px; display:flex; align-items:center; justify-content:center;
+  box-shadow:var(--sh-red); cursor:pointer;
+  transition:transform .4s var(--bounce), box-shadow .3s;
+  animation:brandPulse 3s ease-in-out infinite;
+}
+@keyframes brandPulse {
+  0%,100% { box-shadow: 0 0 20px rgba(224,48,48,0.3); }
+  50%     { box-shadow: 0 0 40px rgba(224,48,48,0.6), 0 0 80px rgba(224,48,48,0.2); }
+}
+.brand-wrap:hover { transform:rotate(-8deg) scale(1.1); box-shadow:0 0 50px rgba(224,48,48,0.5); }
+.brand-svg { width:26px; height:26px; fill:none; stroke:#fff; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
+
+.logo { display:flex; align-items:center; gap:14px; text-decoration:none; }
+.logo-text {
+  font-family:'Syne',sans-serif; font-size:19px; font-weight:700;
+  background:linear-gradient(135deg, var(--red2), var(--gold2));
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
+  letter-spacing:-0.3px;
+}
+.logo-sub { font-size:11px; color:var(--txt3); letter-spacing:2px; text-transform:uppercase; margin-top:1px; }
+
+.hdr-right { display:flex; align-items:center; gap:12px; }
+.hdr-badge {
+  display:flex; align-items:center; gap:8px;
+  background:rgba(224,48,48,0.1); border:1px solid rgba(224,48,48,0.2);
+  border-radius:40px; padding:6px 14px; font-size:12px; color:var(--red2); font-weight:500;
+}
+.pulse-dot { width:7px; height:7px; background:var(--red2); border-radius:50%; animation:dotPulse 1.5s ease-in-out infinite; }
+@keyframes dotPulse { 0%,100%{opacity:1;transform:scale(1);} 50%{opacity:.4;transform:scale(.6);} }
+
+.hdr-link {
+  display:inline-flex; align-items:center; gap:6px;
+  background:rgba(255,255,255,0.04); border:1px solid rgba(224,48,48,0.2);
+  color:var(--txt2); border-radius:100px; padding:6px 14px; font-size:12px; font-weight:600;
+  text-decoration:none; transition:all .2s;
+}
+.hdr-link:hover { background:rgba(224,48,48,0.15); border-color:var(--red); color:var(--red2); }
+
+/* ===== PROGRESS BAR ===== */
+.prog-wrap { width:100%; height:3px; background:rgba(255,255,255,0.05); position:relative; overflow:visible; }
+.prog-fill {
+  height:100%; background:linear-gradient(90deg, var(--red), var(--red2), var(--gold));
+  border-radius:0 2px 2px 0; transition:width .6s var(--ease); position:relative;
+}
+.prog-fill::after {
+  content:''; position:absolute; right:-6px; top:50%; transform:translateY(-50%);
+  width:12px; height:12px; background:var(--red2); border-radius:50%; box-shadow:0 0 12px var(--red-glow);
+}
+
+/* ===== HERO SECTION ===== */
+.hero { text-align:center; padding:56px 28px 36px; max-width:720px; margin:0 auto; }
+.hero-eyebrow {
+  display:inline-flex; align-items:center; gap:8px;
+  background:rgba(224,48,48,0.08); border:1px solid rgba(224,48,48,0.2);
+  border-radius:100px; padding:6px 16px; font-size:11px; letter-spacing:2.5px;
+  text-transform:uppercase; color:var(--red2); margin-bottom:22px; font-weight:500;
+  animation:fadeSlideUp .8s var(--ease) forwards; opacity:0; transform:translateY(16px);
+}
+.hero-title {
+  font-family:'Syne',sans-serif; font-size:clamp(28px,5vw,48px); font-weight:800;
+  line-height:1.08; letter-spacing:-1px; margin-bottom:16px;
+  animation:fadeSlideUp .8s .15s var(--ease) forwards; opacity:0; transform:translateY(20px);
+}
+.hero-title span {
+  background:linear-gradient(135deg, var(--red), var(--red2) 50%, var(--gold));
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
+}
+.hero-sub {
+  color:var(--txt2); font-size:16px; max-width:540px; margin:0 auto 32px;
+  animation:fadeSlideUp .8s .3s var(--ease) forwards; opacity:0; transform:translateY(16px);
+}
+.hero-stats {
+  display:flex; justify-content:center; gap:40px; flex-wrap:wrap;
+  animation:fadeSlideUp .8s .45s var(--ease) forwards; opacity:0; transform:translateY(12px);
+}
+.stat-item { text-align:center; }
+.stat-num {
+  font-family:'Syne',sans-serif; font-size:24px; font-weight:800;
+  background:linear-gradient(135deg, var(--red2), var(--gold2));
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
+}
+.stat-label { font-size:11px; color:var(--txt3); text-transform:uppercase; letter-spacing:1.5px; margin-top:2px; }
+@keyframes fadeSlideUp { to { opacity:1; transform:translateY(0); } }
+
+/* ===== FORM TYPE TABS ===== */
+.form-tabs {
+  max-width:760px; margin:0 auto 28px; padding:0 28px;
+  display:grid; grid-template-columns:1fr 1fr; gap:14px; position:relative; z-index:2;
+}
+@media(max-width:600px){ .form-tabs{ grid-template-columns:1fr; } }
+.ft-tab {
+  background:linear-gradient(145deg, rgba(20,10,10,0.9), rgba(12,6,6,0.95));
+  border:1.5px solid var(--glass-b); border-radius:var(--r-lg); padding:22px 20px;
+  cursor:pointer; color:var(--txt2); font-family:'DM Sans',sans-serif; text-align:left;
+  transition:all .25s var(--ease); display:flex; flex-direction:column; gap:6px;
+  position:relative; overflow:hidden;
+}
+.ft-tab::before {
+  content:''; position:absolute; top:0; left:0; right:0; height:2px;
+  background:linear-gradient(90deg, transparent, rgba(224,48,48,0.4), transparent);
+  opacity:0; transition:opacity .25s;
+}
+.ft-tab:hover { border-color:rgba(224,48,48,0.3); transform:translateY(-2px); }
+.ft-tab:hover::before { opacity:1; }
+.ft-tab.active {
+  background:linear-gradient(145deg, rgba(224,48,48,0.14), rgba(224,48,48,0.04));
+  border-color:var(--red); color:var(--txt); box-shadow:0 0 24px rgba(224,48,48,0.15);
+}
+.ft-tab.active::before { opacity:1; }
+.ft-icon { font-size:28px; }
+.ft-title { font-family:'Syne',sans-serif; font-size:17px; font-weight:700; color:var(--txt); }
+.ft-sub { font-size:12px; color:var(--txt3); letter-spacing:0.5px; }
+
+/* ===== STEP NAVIGATION ===== */
+.steps-nav { max-width:900px; margin:0 auto 32px; padding:0 28px; display:flex; position:relative; }
+.steps-nav::before {
+  content:''; position:absolute; top:20px; left:calc(28px + 40px); right:calc(28px + 40px);
+  height:1px; background:rgba(224,48,48,0.15); z-index:0;
+}
+.step-node { flex:1; display:flex; flex-direction:column; align-items:center; gap:8px; cursor:pointer; position:relative; z-index:1; }
+.step-circle {
+  width:40px; height:40px; border-radius:50%;
+  background:rgba(224,48,48,0.08); border:1.5px solid rgba(224,48,48,0.2);
+  display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:600;
+  color:var(--txt3); transition:all .3s var(--ease); font-family:'Syne',sans-serif;
+}
+.step-node.done .step-circle { background:rgba(224,48,48,0.15); border-color:var(--red); color:var(--red2); }
+.step-node.active .step-circle {
+  background:linear-gradient(135deg, var(--red), #ff4444); border-color:var(--red2); color:#fff;
+  box-shadow:0 0 20px rgba(224,48,48,0.4); animation:stepGlow 2s ease-in-out infinite;
+}
+@keyframes stepGlow { 0%,100%{box-shadow:0 0 20px rgba(224,48,48,0.4);} 50%{box-shadow:0 0 35px rgba(224,48,48,0.7);} }
+.step-label { font-size:10px; color:var(--txt3); text-transform:uppercase; letter-spacing:1px; text-align:center; white-space:nowrap; }
+.step-node.active .step-label, .step-node.done .step-label { color:var(--red2); }
+
+/* ===== FORM ===== */
+.form-wrap { max-width:900px; margin:0 auto 60px; padding:0 28px; position:relative; z-index:2; }
+.form-panel { display:none; } .form-panel.active { display:block; }
+.step-panel { display:none; } .step-panel.active { display:block; animation:panelIn .5s var(--ease); }
+@keyframes panelIn { from{opacity:0;transform:translateX(16px);} to{opacity:1;transform:translateX(0);} }
+
+.card {
+  background:linear-gradient(145deg, rgba(20,10,10,0.9), rgba(12,6,6,0.95));
+  border:1px solid var(--glass-b); border-radius:var(--r-xl); padding:36px;
+  box-shadow:var(--sh-lg), inset 0 1px 0 rgba(255,255,255,0.04), inset 0 -1px 0 rgba(0,0,0,0.3);
+  backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px);
+  margin-bottom:24px; position:relative; overflow:hidden;
+}
+.card::before { content:''; position:absolute; top:0; left:0; right:0; height:1px; background:linear-gradient(90deg, transparent, rgba(224,48,48,0.3), transparent); }
+.card-glow { position:absolute; top:-100px; right:-100px; width:300px; height:300px; background:radial-gradient(circle, rgba(224,48,48,0.06) 0%, transparent 60%); pointer-events:none; }
+
+.section-hdr { display:flex; align-items:center; gap:14px; margin-bottom:26px; }
+.section-icon {
+  width:44px; height:44px; background:linear-gradient(135deg, rgba(224,48,48,0.2), rgba(224,48,48,0.08));
+  border:1px solid rgba(224,48,48,0.25); border-radius:12px; display:flex; align-items:center; justify-content:center;
+  font-size:20px; flex-shrink:0;
+}
+.section-title { font-family:'Syne',sans-serif; font-size:20px; font-weight:700; color:var(--txt); }
+.section-sub { font-size:13px; color:var(--txt3); margin-top:2px; }
+
+.grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+.full { grid-column:1/-1; }
+@media(max-width:640px){ .grid-2{grid-template-columns:1fr;} .card{padding:22px;} }
+
+.field { display:flex; flex-direction:column; gap:7px; }
+label { font-size:12px; font-weight:500; color:var(--txt3); text-transform:uppercase; letter-spacing:1.2px; }
+label .req { color:var(--red2); margin-left:2px; }
+input[type=text],input[type=tel],input[type=email],input[type=date],select,textarea {
+  background:rgba(255,255,255,0.03); border:1.5px solid rgba(224,48,48,0.12); border-radius:var(--r-md);
+  padding:12px 16px; color:var(--txt); font-family:'DM Sans',sans-serif; font-size:15px; outline:none;
+  transition:border-color .25s, background .25s, box-shadow .25s; width:100%; -webkit-appearance:none;
+}
+input::placeholder,textarea::placeholder { color:var(--txt3); font-size:14px; }
+input:focus,select:focus,textarea:focus { border-color:var(--red); background:rgba(224,48,48,0.05); box-shadow:0 0 0 3px rgba(224,48,48,0.12); }
+select {
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23e03030' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat:no-repeat; background-position:right 14px center; padding-right:40px; cursor:pointer;
+}
+select option { background:#150c0c; color:var(--txt); }
+textarea { resize:vertical; min-height:96px; line-height:1.6; }
+
+.radio-group { display:flex; flex-wrap:wrap; gap:10px; }
+.radio-pill { position:relative; }
+.radio-pill input { position:absolute; opacity:0; width:0; height:0; }
+.radio-pill label {
+  display:flex; align-items:center; gap:7px; padding:9px 16px;
+  background:rgba(255,255,255,0.03); border:1.5px solid rgba(224,48,48,0.12); border-radius:100px;
+  cursor:pointer; font-size:13px; font-weight:500; color:var(--txt2); text-transform:none; letter-spacing:0;
+  transition:all .2s var(--ease); white-space:nowrap; user-select:none;
+}
+.radio-pill input:checked + label {
+  background:linear-gradient(135deg, rgba(224,48,48,0.2), rgba(224,48,48,0.08)); border-color:var(--red);
+  color:var(--red2); box-shadow:0 0 15px rgba(224,48,48,0.15); transform:scale(1.03);
+}
+.radio-pill label:hover { border-color:rgba(224,48,48,0.3); color:var(--txt); }
+
+.check-group { display:flex; flex-wrap:wrap; gap:10px; }
+.check-pill { position:relative; }
+.check-pill input { position:absolute; opacity:0; width:0; height:0; }
+.check-pill label {
+  display:flex; align-items:center; gap:8px; padding:9px 16px;
+  background:rgba(255,255,255,0.03); border:1.5px solid rgba(224,48,48,0.12); border-radius:var(--r-sm);
+  cursor:pointer; font-size:13px; font-weight:500; color:var(--txt2); text-transform:none; letter-spacing:0;
+  transition:all .2s var(--ease); user-select:none;
+}
+.check-pill input:checked + label { background:rgba(224,48,48,0.12); border-color:var(--red); color:var(--red2); }
+.check-pill label:hover { border-color:rgba(224,48,48,0.3); }
+
+/* ===== AVAILABILITY GRID ===== */
+.avail-table { width:100%; border-collapse:separate; border-spacing:6px; }
+.avail-table th { font-size:11px; color:var(--txt3); text-transform:uppercase; letter-spacing:1px; font-weight:500; padding:6px 4px; text-align:center; }
+.avail-table td { text-align:center; padding:4px; }
+.avail-table td:first-child { text-align:left; color:var(--txt2); font-size:13px; font-weight:500; padding-left:10px; }
+.avail-cell { position:relative; display:inline-block; width:100%; }
+.avail-cell input { position:absolute; opacity:0; width:0; height:0; }
+.avail-cell label {
+  display:flex; align-items:center; justify-content:center; padding:11px 8px;
+  background:rgba(255,255,255,0.03); border:1.5px solid rgba(224,48,48,0.12); border-radius:8px;
+  cursor:pointer; transition:all .2s var(--ease); min-height:42px; text-transform:none; letter-spacing:0; font-size:12px; color:var(--txt3);
+}
+.avail-cell input:checked + label { background:linear-gradient(135deg, rgba(224,48,48,0.2), rgba(224,48,48,0.08)); border-color:var(--red); color:var(--red2); box-shadow:0 0 12px rgba(224,48,48,0.15); }
+.avail-cell label:hover { border-color:rgba(224,48,48,0.3); }
+
+.divider { border:none; height:1px; background:linear-gradient(90deg, transparent, rgba(224,48,48,0.2), transparent); margin:24px 0; }
+
+/* ===== INFO BOX ===== */
+.info-box {
+  background:rgba(224,48,48,0.06); border:1px solid rgba(224,48,48,0.15); border-left:3px solid var(--red);
+  border-radius:var(--r-md); padding:14px 18px; font-size:13px; color:var(--txt2); line-height:1.6; margin-bottom:24px;
+}
+.info-box strong { color:var(--red2); }
+
+/* ===== SIGNATURE ===== */
+.sig-wrap { background:rgba(255,255,255,0.02); border:1.5px dashed rgba(224,48,48,0.25); border-radius:var(--r-md); overflow:hidden; position:relative; }
+.sig-canvas { width:100%; display:block; cursor:crosshair; touch-action:none; }
+.sig-placeholder { position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px; pointer-events:none; color:var(--txt3); font-size:13px; transition:opacity .3s; }
+.sig-placeholder .pen-icon { font-size:28px; opacity:.4; }
+.sig-actions { display:flex; justify-content:flex-end; padding:10px 14px; border-top:1px solid rgba(224,48,48,0.1); }
+.btn-clear-sig { background:transparent; border:1px solid rgba(224,48,48,0.2); border-radius:100px; color:var(--txt3); padding:5px 14px; font-size:12px; cursor:pointer; transition:all .2s; font-family:'DM Sans',sans-serif; }
+.btn-clear-sig:hover { border-color:var(--red); color:var(--red2); }
+
+.consent-box { background:rgba(224,48,48,0.04); border:1px solid rgba(224,48,48,0.12); border-radius:var(--r-md); padding:20px; font-size:13px; color:var(--txt2); line-height:1.7; margin-bottom:20px; max-height:150px; overflow-y:auto; }
+.consent-box::-webkit-scrollbar { width:4px; }
+.consent-box::-webkit-scrollbar-thumb { background:rgba(224,48,48,0.3); border-radius:2px; }
+.consent-check { display:flex; align-items:flex-start; gap:12px; cursor:pointer; font-size:14px; color:var(--txt2); }
+.consent-check input[type=checkbox] { width:18px; height:18px; min-width:18px; border-radius:4px; accent-color:var(--red); cursor:pointer; margin-top:2px; }
+
+/* ===== BUTTONS ===== */
+.btn-row { display:flex; gap:12px; margin-top:28px; }
+.btn { display:inline-flex; align-items:center; gap:8px; padding:14px 26px; border-radius:var(--r-md); font-family:'Syne',sans-serif; font-size:15px; font-weight:700; cursor:pointer; border:none; outline:none; transition:all .25s var(--ease); letter-spacing:0.2px; position:relative; overflow:hidden; }
+.btn-primary { background:linear-gradient(135deg, var(--red), #d41f1f); color:#fff; box-shadow:0 4px 20px rgba(224,48,48,0.35); flex:1; }
+.btn-primary:hover { transform:translateY(-2px); box-shadow:0 8px 30px rgba(224,48,48,0.5); background:linear-gradient(135deg, var(--red2), var(--red)); }
+.btn-primary:disabled { opacity:.5; cursor:not-allowed; transform:none; }
+.btn-outline { background:rgba(255,255,255,0.03); color:var(--txt2); border:1.5px solid rgba(255,255,255,0.1); }
+.btn-outline:hover { border-color:rgba(224,48,48,0.3); color:var(--red2); }
+.btn-arrow { font-size:18px; transition:transform .2s; }
+.btn-primary:hover .btn-arrow { transform:translateX(4px); }
+
+/* ===== TOAST ===== */
+.toast { position:fixed; bottom:28px; right:28px; background:rgba(20,10,10,0.95); border:1px solid rgba(224,48,48,0.2); border-radius:var(--r-md); padding:12px 20px; font-size:13px; color:var(--txt2); box-shadow:var(--sh-md); z-index:999; display:flex; align-items:center; gap:10px; transform:translateY(80px); opacity:0; transition:all .3s var(--bounce); }
+.toast.show { transform:translateY(0); opacity:1; }
+.toast-dot { width:6px; height:6px; border-radius:50%; background:var(--red); }
+
+/* ===== SUCCESS ===== */
+#successScreen { display:none; text-align:center; padding:72px 28px; max-width:600px; margin:0 auto; position:relative; z-index:2; }
+.success-ring { width:100px; height:100px; border-radius:50%; background:linear-gradient(135deg, rgba(224,48,48,0.2), rgba(224,48,48,0.05)); border:2px solid var(--red); display:flex; align-items:center; justify-content:center; font-size:42px; margin:0 auto 26px; animation:successPop .6s var(--spring), successGlow 2s .6s ease-in-out infinite alternate; box-shadow:0 0 40px rgba(224,48,48,0.2); }
+@keyframes successPop { from{transform:scale(0) rotate(-20deg);opacity:0;} to{transform:scale(1) rotate(0);opacity:1;} }
+@keyframes successGlow { from{box-shadow:0 0 20px rgba(224,48,48,0.2);} to{box-shadow:0 0 50px rgba(224,48,48,0.5);} }
+.success-title { font-family:'Syne',sans-serif; font-size:clamp(24px,5vw,36px); font-weight:800; margin-bottom:12px; background:linear-gradient(135deg, var(--red2), var(--gold2)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+.success-sub { color:var(--txt2); font-size:16px; margin-bottom:26px; }
+.ref-badge { display:inline-block; background:rgba(224,48,48,0.08); border:1px solid rgba(224,48,48,0.25); border-radius:var(--r-md); padding:16px 28px; font-family:'JetBrains Mono',monospace; font-size:22px; color:var(--red2); letter-spacing:2px; margin-bottom:32px; }
+.next-steps { background:rgba(20,10,10,0.9); border:1px solid var(--glass-b); border-radius:var(--r-lg); padding:24px; text-align:left; }
+.next-steps h4 { font-family:'Syne',sans-serif; font-weight:700; margin-bottom:16px; color:var(--txt); }
+.next-step-item { display:flex; align-items:flex-start; gap:12px; margin-bottom:12px; font-size:14px; color:var(--txt2); }
+.next-step-num { width:24px; height:24px; min-width:24px; background:rgba(224,48,48,0.15); border:1px solid rgba(224,48,48,0.25); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:700; color:var(--red2); font-family:'Syne',sans-serif; margin-top:1px; }
+
+/* FOOTER */
+.site-footer { text-align:center; padding:30px 20px; font-size:12px; color:var(--txt3); border-top:1px solid var(--glass-b); margin-top:40px; }
+.site-footer a { color:var(--red2); text-decoration:none; margin:0 8px; }
+.site-footer a:hover { text-decoration:underline; }
+</style>
+</head>
+<body>
+
+<canvas id="particleCanvas"></canvas>
+
+<div class="layer">
+
+<!-- HEADER -->
+<header class="hdr">
+  <div class="hdr-inner">
+    <a href="index.html" class="logo">
+      <div class="brand-wrap">
+        <svg class="brand-svg" viewBox="0 0 24 24">
+          <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+        </svg>
+      </div>
+      <div>
+        <div class="logo-text">Goals 4 My Life</div>
+        <div class="logo-sub">Aunties & Uncles Mentorship</div>
+      </div>
+    </a>
+    <div class="hdr-right">
+      <div class="hdr-badge"><div class="pulse-dot"></div>Now Accepting Applications</div>
+      <a href="dashboard.html" class="hdr-link">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+        Dashboard
+      </a>
+    </div>
+  </div>
+  <div class="prog-wrap"><div class="prog-fill" id="progFill" style="width:25%"></div></div>
+</header>
+
+<!-- HERO -->
+<section class="hero layer" id="heroSection">
+  <div class="hero-eyebrow">⚖️ Community Mentorship Program</div>
+  <h1 class="hero-title">Help Shape the <span>Next Generation</span></h1>
+  <p class="hero-sub">Join our community of Aunties & Uncles, or enroll a young person in the program. Every application is reviewed with care and kept confidential.</p>
+  <div class="hero-stats">
+    <div class="stat-item"><div class="stat-num">100%</div><div class="stat-label">Background Vetted</div></div>
+    <div class="stat-item"><div class="stat-num">1-on-1</div><div class="stat-label">Mentorship</div></div>
+    <div class="stat-item"><div class="stat-num">$0 Fee</div><div class="stat-label">For Families</div></div>
+  </div>
+</section>
+
+<!-- FORM TYPE TABS -->
+<div class="form-tabs layer" id="formTypeTabs">
+  <button class="ft-tab active" id="tabVolunteer" onclick="selectFormType('volunteer')">
+    <span class="ft-icon">👵👴</span>
+    <span class="ft-title">Community Auntie / Uncle</span>
+    <span class="ft-sub">Volunteer Mentor Application</span>
+  </button>
+  <button class="ft-tab" id="tabFamily" onclick="selectFormType('family')">
+    <span class="ft-icon">👨‍👩‍👧</span>
+    <span class="ft-title">Family Enrollment</span>
+    <span class="ft-sub">Enroll a Young Person</span>
+  </button>
+</div>
+
+<!-- VOLUNTEER FORM -->
+<div class="form-panel active" id="volunteerForm">
+  <nav class="steps-nav" id="volStepsNav">
+    <div class="step-node active" data-step="1"><div class="step-circle">1</div><div class="step-label">Personal</div></div>
+    <div class="step-node" data-step="2"><div class="step-circle">2</div><div class="step-label">About You</div></div>
+    <div class="step-node" data-step="3"><div class="step-circle">3</div><div class="step-label">Availability</div></div>
+    <div class="step-node" data-step="4"><div class="step-circle">4</div><div class="step-label">Sign & Submit</div></div>
+  </nav>
+
+  <div class="form-wrap">
+    <!-- STEP 1 -->
+    <div class="step-panel active" id="volStep1">
+      <div class="card"><div class="card-glow"></div>
+        <div class="section-hdr"><div class="section-icon">👤</div><div><div class="section-title">Volunteer Information</div><div class="section-sub">Tell us who you are — all information is confidential</div></div></div>
+        <div class="grid-2">
+          <div class="field full"><label>Name <span class="req">*</span></label><input type="text" id="v_name" placeholder="Full name" required></div>
+          <div class="field"><label>Date</label><input type="date" id="v_date"></div>
+          <div class="field"><label>Phone Number <span class="req">*</span></label><input type="tel" id="v_phone" placeholder="(555) 000-0000" required></div>
+          <div class="field full"><label>Address</label><input type="text" id="v_address" placeholder="Street address"></div>
+          <div class="field"><label>City</label><input type="text" id="v_city" placeholder="City"></div>
+          <div class="field"><label>State</label><input type="text" id="v_state" placeholder="State" maxlength="2"></div>
+          <div class="field"><label>ZIP Code</label><input type="text" id="v_zip" placeholder="ZIP" maxlength="10"></div>
+          <div class="field"><label>Email</label><input type="email" id="v_email" placeholder="your@email.com"></div>
+          <div class="field"><label>Date of Birth</label><input type="date" id="v_dob"></div>
+          <div class="field full">
+            <label>Preferred Contact Method</label>
+            <div class="radio-group">
+              <div class="radio-pill"><input type="radio" name="v_preferredContact" id="v_pc1" value="Phone"><label for="v_pc1">📞 Phone</label></div>
+              <div class="radio-pill"><input type="radio" name="v_preferredContact" id="v_pc2" value="Text"><label for="v_pc2">💬 Text</label></div>
+              <div class="radio-pill"><input type="radio" name="v_preferredContact" id="v_pc3" value="Email"><label for="v_pc3">✉️ Email</label></div>
+            </div>
+          </div>
+          <div class="field"><label>Occupation</label><input type="text" id="v_occupation" placeholder="Occupation"></div>
+          <div class="field"><label>Employer</label><input type="text" id="v_employer" placeholder="Employer"></div>
+        </div>
+        <div class="btn-row"><button class="btn btn-primary" onclick="goVolStep(2)">Continue <span class="btn-arrow">→</span></button></div>
+      </div>
+    </div>
+
+    <!-- STEP 2 -->
+    <div class="step-panel" id="volStep2">
+      <div class="card"><div class="card-glow"></div>
+        <div class="section-hdr"><div class="section-icon">💚</div><div><div class="section-title">About You</div><div class="section-sub">Your heart, gifts, and the community you want to serve</div></div></div>
+        <div class="grid-2" style="margin-bottom:22px;">
+          <div class="field"><label>Emergency Contact — Name</label><input type="text" id="v_emergencyName" placeholder="Full name"></div>
+          <div class="field"><label>Relationship</label><input type="text" id="v_emergencyRelationship" placeholder="e.g. Spouse, Sibling"></div>
+          <div class="field"><label>Emergency Contact — Phone</label><input type="tel" id="v_emergencyPhone" placeholder="(555) 000-0000"></div>
+        </div>
+        <div class="field" style="margin-bottom:20px;"><label>Why do you want to become a Community Auntie or Uncle?</label><textarea id="v_whyBecome" placeholder="Share your motivation…" rows="4"></textarea></div>
+        <div class="field" style="margin-bottom:22px;"><label>What gifts, talents or life experiences would you like to share?</label><textarea id="v_giftsToShare" placeholder="Tell us what makes you unique…" rows="4"></textarea></div>
+        <hr class="divider">
+        <div class="field" style="margin-bottom:22px;">
+          <label>Skills & Talents You Can Offer</label>
+          <div class="check-group" id="v_skillsGrid">
+            <div class="check-pill"><input type="checkbox" id="sk1" value="Parenting"><label for="sk1">Parenting</label></div>
+            <div class="check-pill"><input type="checkbox" id="sk2" value="Cooking"><label for="sk2">Cooking</label></div>
+            <div class="check-pill"><input type="checkbox" id="sk3" value="Financial Literacy"><label for="sk3">Financial Literacy</label></div>
+            <div class="check-pill"><input type="checkbox" id="sk4" value="Budgeting"><label for="sk4">Budgeting</label></div>
+            <div class="check-pill"><input type="checkbox" id="sk5" value="Career Development"><label for="sk5">Career Development</label></div>
+            <div class="check-pill"><input type="checkbox" id="sk6" value="Resume Building"><label for="sk6">Resume Building</label></div>
+            <div class="check-pill"><input type="checkbox" id="sk7" value="College Preparation"><label for="sk7">College Preparation</label></div>
+            <div class="check-pill"><input type="checkbox" id="sk8" value="Entrepreneurship"><label for="sk8">Entrepreneurship</label></div>
+            <div class="check-pill"><input type="checkbox" id="sk9" value="Trade Skills"><label for="sk9">Trade Skills</label></div>
+            <div class="check-pill"><input type="checkbox" id="sk10" value="Sports"><label for="sk10">Sports</label></div>
+            <div class="check-pill"><input type="checkbox" id="sk11" value="Music"><label for="sk11">Music</label></div>
+            <div class="check-pill"><input type="checkbox" id="sk12" value="Arts & Crafts"><label for="sk12">Arts & Crafts</label></div>
+            <div class="check-pill"><input type="checkbox" id="sk13" value="Gardening"><label for="sk13">Gardening</label></div>
+            <div class="check-pill"><input type="checkbox" id="sk14" value="Faith"><label for="sk14">Faith</label></div>
+            <div class="check-pill"><input type="checkbox" id="sk15" value="Transportation"><label for="sk15">Transportation</label></div>
+            <div class="check-pill"><input type="checkbox" id="sk16" value="Tutoring"><label for="sk16">Tutoring</label></div>
+            <div class="check-pill"><input type="checkbox" id="sk17" value="Mental Health Support"><label for="sk17">Mental Health Support</label></div>
+            <div class="check-pill"><input type="checkbox" id="sk18" value="Other"><label for="sk18">+ Other</label></div>
+          </div>
+        </div>
+        <div class="field">
+          <label>Preferred Population</label>
+          <div class="check-group">
+            <div class="check-pill"><input type="checkbox" id="pop1" value="Elementary"><label for="pop1">Elementary</label></div>
+            <div class="check-pill"><input type="checkbox" id="pop2" value="Middle School"><label for="pop2">Middle School</label></div>
+            <div class="check-pill"><input type="checkbox" id="pop3" value="High School"><label for="pop3">High School</label></div>
+            <div class="check-pill"><input type="checkbox" id="pop4" value="Young Adults"><label for="pop4">Young Adults</label></div>
+            <div class="check-pill"><input type="checkbox" id="pop5" value="Parents"><label for="pop5">Parents</label></div>
+            <div class="check-pill"><input type="checkbox" id="pop6" value="Families"><label for="pop6">Families</label></div>
+          </div>
+        </div>
+        <div class="btn-row"><button class="btn btn-outline" onclick="goVolStep(1)">← Back</button><button class="btn btn-primary" onclick="goVolStep(3)">Continue <span class="btn-arrow">→</span></button></div>
+      </div>
+    </div>
+
+    <!-- STEP 3 -->
+    <div class="step-panel" id="volStep3">
+      <div class="card"><div class="card-glow"></div>
+        <div class="section-hdr"><div class="section-icon">📅</div><div><div class="section-title">Availability & Background</div><div class="section-sub">When can you show up, and what are you willing to do?</div></div></div>
+        <div class="field" style="margin-bottom:24px;">
+          <label>Weekly Availability</label>
+          <table class="avail-table"><thead><tr><th></th><th>Morning</th><th>Afternoon</th><th>Evening</th></tr></thead><tbody id="v_availBody"></tbody></table>
+        </div>
+        <hr class="divider">
+        <div class="grid-2" style="margin-bottom:22px;">
+          <div class="field"><label>Have you ever volunteered before?</label><div class="radio-group"><div class="radio-pill"><input type="radio" name="v_volunteeredBefore" id="v_vb1" value="Yes"><label for="v_vb1">Yes</label></div><div class="radio-pill"><input type="radio" name="v_volunteeredBefore" id="v_vb2" value="No"><label for="v_vb2">No</label></div></div></div>
+          <div class="field"><label>Have you ever mentored youth?</label><div class="radio-group"><div class="radio-pill"><input type="radio" name="v_mentoredYouth" id="v_my1" value="Yes"><label for="v_my1">Yes</label></div><div class="radio-pill"><input type="radio" name="v_mentoredYouth" id="v_my2" value="No"><label for="v_my2">No</label></div></div></div>
+        </div>
+        <div class="field">
+          <label>Are you willing to complete the following?</label>
+          <div class="check-group">
+            <div class="check-pill"><input type="checkbox" id="wt1" value="Criminal Background Check"><label for="wt1">Criminal Background Check</label></div>
+            <div class="check-pill"><input type="checkbox" id="wt2" value="Child Abuse Clearance"><label for="wt2">Child Abuse Clearance</label></div>
+            <div class="check-pill"><input type="checkbox" id="wt3" value="Volunteer Orientation"><label for="wt3">Volunteer Orientation</label></div>
+            <div class="check-pill"><input type="checkbox" id="wt4" value="Confidentiality Agreement"><label for="wt4">Confidentiality Agreement</label></div>
+            <div class="check-pill"><input type="checkbox" id="wt5" value="Mandatory Reporter Training"><label for="wt5">Mandatory Reporter Training</label></div>
+          </div>
+        </div>
+        <div class="btn-row"><button class="btn btn-outline" onclick="goVolStep(2)">← Back</button><button class="btn btn-primary" onclick="goVolStep(4)">Continue <span class="btn-arrow">→</span></button></div>
+      </div>
+    </div>
+
+    <!-- STEP 4 -->
+    <div class="step-panel" id="volStep4">
+      <div class="card"><div class="card-glow"></div>
+        <div class="section-hdr"><div class="section-icon">✍️</div><div><div class="section-title">References & Sign</div><div class="section-sub">Final step — two references and your signature</div></div></div>
+        <div class="grid-2" style="margin-bottom:20px;">
+          <div class="field full" style="margin-bottom:0;"><label style="color:var(--red2);font-size:13px;">Reference 1</label></div>
+          <div class="field"><label>Name</label><input type="text" id="v_ref1Name" placeholder="Reference name"></div>
+          <div class="field"><label>Phone</label><input type="tel" id="v_ref1Phone" placeholder="(555) 000-0000"></div>
+          <div class="field full"><label>Relationship</label><input type="text" id="v_ref1Relationship" placeholder="e.g. Former supervisor"></div>
+          <div class="field full" style="margin-top:12px;margin-bottom:0;"><label style="color:var(--red2);font-size:13px;">Reference 2</label></div>
+          <div class="field"><label>Name</label><input type="text" id="v_ref2Name" placeholder="Reference name"></div>
+          <div class="field"><label>Phone</label><input type="tel" id="v_ref2Phone" placeholder="(555) 000-0000"></div>
+          <div class="field full"><label>Relationship</label><input type="text" id="v_ref2Relationship" placeholder="e.g. Longtime friend"></div>
+        </div>
+        <hr class="divider">
+        <div class="field" style="margin-bottom:20px;">
+          <label>Volunteer Signature <span class="req">*</span></label>
+          <div class="sig-wrap">
+            <canvas id="v_sigCanvas" class="sig-canvas" height="120"></canvas>
+            <div class="sig-placeholder" id="v_sigPlaceholder"><span class="pen-icon">✍️</span>Sign here with your mouse or finger</div>
+            <div class="sig-actions"><button type="button" class="btn-clear-sig" onclick="clearVolSig()">Clear</button></div>
+          </div>
+          <div class="field" style="margin-top:12px;max-width:280px;"><label>Date</label><input type="date" id="v_signDate"></div>
+        </div>
+        <div class="consent-box">
+          <strong>Community Auntie & Uncle Commitment Agreement</strong><br><br>
+          As a Community Auntie or Uncle, I agree to:<br><br>
+          • Encourage youth and families. • Demonstrate honesty and integrity. • Respect confidentiality. • Be dependable. • Maintain healthy boundaries. • Report any safety concerns immediately. • Respect all cultures and backgrounds. • Model positive behavior. • Communicate respectfully. • Remember that I am a mentor—not a parent or therapist.<br><br>
+          I certify that the information in this application is true and accurate to the best of my knowledge.
+        </div>
+        <label class="consent-check"><input type="checkbox" id="v_consentCheck"><span>I have read and agree to the Commitment Agreement</span></label>
+        <div class="btn-row"><button class="btn btn-outline" onclick="goVolStep(3)">← Back</button><button class="btn btn-primary" id="v_submitBtn" onclick="submitVolunteer()">Submit Volunteer Application <span class="btn-arrow">→</span></button></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- FAMILY FORM -->
+<div class="form-panel" id="familyForm">
+  <nav class="steps-nav" id="famStepsNav">
+    <div class="step-node active" data-step="1"><div class="step-circle">1</div><div class="step-label">Parent/Guardian</div></div>
+    <div class="step-node" data-step="2"><div class="step-circle">2</div><div class="step-label">Child Info</div></div>
+    <div class="step-node" data-step="3"><div class="step-circle">3</div><div class="step-label">Goals</div></div>
+    <div class="step-node" data-step="4"><div class="step-circle">4</div><div class="step-label">Sign & Submit</div></div>
+  </nav>
+
+  <div class="form-wrap">
+    <!-- STEP 1 -->
+    <div class="step-panel active" id="famStep1">
+      <div class="card"><div class="card-glow"></div>
+        <div class="section-hdr"><div class="section-icon">👨‍👩‍👧</div><div><div class="section-title">Parent / Guardian Information</div><div class="section-sub">How can we reach you?</div></div></div>
+        <div class="grid-2">
+          <div class="field full"><label>Parent/Guardian Name <span class="req">*</span></label><input type="text" id="f_parentName" placeholder="Full name" required></div>
+          <div class="field"><label>Phone Number <span class="req">*</span></label><input type="tel" id="f_phone" placeholder="(555) 000-0000" required></div>
+          <div class="field"><label>Email</label><input type="email" id="f_email" placeholder="your@email.com"></div>
+          <div class="field full"><label>Address</label><input type="text" id="f_address" placeholder="Street address, city, state, ZIP"></div>
+          <div class="field full"><label>Emergency Contact (name & phone)</label><input type="text" id="f_emergencyContact" placeholder="Name — (555) 000-0000"></div>
+        </div>
+        <div class="btn-row"><button class="btn btn-primary" onclick="goFamStep(2)">Continue <span class="btn-arrow">→</span></button></div>
+      </div>
+    </div>
+
+    <!-- STEP 2 -->
+    <div class="step-panel" id="famStep2">
+      <div class="card"><div class="card-glow"></div>
+        <div class="section-hdr"><div class="section-icon">🧒</div><div><div class="section-title">Child Information</div><div class="section-sub">Tell us about the young person you're enrolling</div></div></div>
+        <div class="grid-2">
+          <div class="field full"><label>Child Name(s)</label><textarea id="f_childNames" placeholder="List all children's full names" rows="2"></textarea></div>
+          <div class="field full"><label>Date(s) of Birth</label><textarea id="f_childDob" placeholder="One per line if multiple" rows="2"></textarea></div>
+          <div class="field"><label>School</label><input type="text" id="f_school" placeholder="School name"></div>
+          <div class="field"><label>Grade</label><input type="text" id="f_grade" placeholder="Grade level"></div>
+          <div class="field full"><label>Medical Concerns</label><textarea id="f_medicalConcerns" placeholder="Any medical conditions we should know about" rows="3"></textarea></div>
+          <div class="field full"><label>Allergies</label><textarea id="f_allergies" placeholder="Food, medication, environmental…" rows="2"></textarea></div>
+          <div class="field full"><label>Transportation Needs</label><textarea id="f_transportationNeeds" placeholder="Do you need transportation assistance?" rows="2"></textarea></div>
+        </div>
+        <div class="btn-row"><button class="btn btn-outline" onclick="goFamStep(1)">← Back</button><button class="btn btn-primary" onclick="goFamStep(3)">Continue <span class="btn-arrow">→</span></button></div>
+      </div>
+    </div>
+
+    <!-- STEP 3 -->
+    <div class="step-panel" id="famStep3">
+      <div class="card"><div class="card-glow"></div>
+        <div class="section-hdr"><div class="section-icon">🌟</div><div><div class="section-title">Goals & Interests</div><div class="section-sub">Help us match your child with the right mentor</div></div></div>
+        <div class="field" style="margin-bottom:18px;"><label>Goals for Participation</label><textarea id="f_goals" placeholder="What would you like your child to gain from this program?" rows="3"></textarea></div>
+        <div class="field" style="margin-bottom:18px;"><label>What strengths does your child have?</label><textarea id="f_childStrengths" placeholder="Talents, personality traits, interests…" rows="3"></textarea></div>
+        <div class="field" style="margin-bottom:18px;"><label>What challenges would you like us to help with?</label><textarea id="f_challenges" placeholder="Areas where your child needs support" rows="3"></textarea></div>
+        <hr class="divider">
+        <div class="section-hdr" style="margin-top:20px;"><div class="section-icon">🎯</div><div><div class="section-title">Youth Interest Survey</div><div class="section-sub">Let's find out what sparks their joy</div></div></div>
+        <div class="field" style="margin-bottom:18px;"><label>What do you enjoy?</label><textarea id="f_youthEnjoy" placeholder="Free time activities, favorite things to do…" rows="2"></textarea></div>
+        <div class="grid-2" style="margin-bottom:18px;">
+          <div class="field"><label>Favorite Subject?</label><input type="text" id="f_favSubject" placeholder="e.g. Math, History"></div>
+          <div class="field"><label>Favorite Hobby?</label><input type="text" id="f_favHobby" placeholder="e.g. Drawing, Basketball"></div>
+          <div class="field"><label>Dream Job?</label><input type="text" id="f_dreamJob" placeholder="What do they want to be?"></div>
+          <div class="field"><label>Favorite Sport?</label><input type="text" id="f_favSport" placeholder="e.g. Soccer"></div>
+          <div class="field full"><label>Favorite Music?</label><input type="text" id="f_favMusic" placeholder="Genres, artists…"></div>
+        </div>
+        <div class="field">
+          <label>What would you like help with?</label>
+          <div class="check-group">
+            <div class="check-pill"><input type="checkbox" id="hw1" value="Homework"><label for="hw1">Homework</label></div>
+            <div class="check-pill"><input type="checkbox" id="hw2" value="Friendships"><label for="hw2">Friendships</label></div>
+            <div class="check-pill"><input type="checkbox" id="hw3" value="Self-esteem"><label for="hw3">Self-esteem</label></div>
+            <div class="check-pill"><input type="checkbox" id="hw4" value="Leadership"><label for="hw4">Leadership</label></div>
+            <div class="check-pill"><input type="checkbox" id="hw5" value="College"><label for="hw5">College</label></div>
+            <div class="check-pill"><input type="checkbox" id="hw6" value="Careers"><label for="hw6">Careers</label></div>
+            <div class="check-pill"><input type="checkbox" id="hw7" value="Life Skills"><label for="hw7">Life Skills</label></div>
+            <div class="check-pill"><input type="checkbox" id="hw8" value="Coping Skills"><label for="hw8">Coping Skills</label></div>
+            <div class="check-pill"><input type="checkbox" id="hw9" value="Goal Setting"><label for="hw9">Goal Setting</label></div>
+            <div class="check-pill"><input type="checkbox" id="hw10" value="Other"><label for="hw10">+ Other</label></div>
+          </div>
+        </div>
+        <div class="btn-row"><button class="btn btn-outline" onclick="goFamStep(2)">← Back</button><button class="btn btn-primary" onclick="goFamStep(4)">Continue <span class="btn-arrow">→</span></button></div>
+      </div>
+    </div>
+
+    <!-- STEP 4 -->
+    <div class="step-panel" id="famStep4">
+      <div class="card"><div class="card-glow"></div>
+        <div class="section-hdr"><div class="section-icon">✍️</div><div><div class="section-title">Sign & Submit</div><div class="section-sub">One last step</div></div></div>
+        <div class="field" style="margin-bottom:20px;">
+          <label>Parent Signature <span class="req">*</span></label>
+          <div class="sig-wrap">
+            <canvas id="f_sigCanvas" class="sig-canvas" height="120"></canvas>
+            <div class="sig-placeholder" id="f_sigPlaceholder"><span class="pen-icon">✍️</span>Sign here with your mouse or finger</div>
+            <div class="sig-actions"><button type="button" class="btn-clear-sig" onclick="clearFamSig()">Clear</button></div>
+          </div>
+          <div class="field" style="margin-top:12px;max-width:280px;"><label>Date</label><input type="date" id="f_signDate"></div>
+        </div>
+        <div class="consent-box">
+          <strong>Family Enrollment Consent</strong><br><br>
+          By submitting this form, I confirm that the information provided is accurate and authorize the Goals 4 My Life Inc. Community Aunties & Uncles Mentorship Program to contact me regarding my child's enrollment. I understand that this is an application and does not guarantee placement in the program.
+        </div>
+        <label class="consent-check"><input type="checkbox" id="f_consentCheck"><span>I have read and agree to the above terms</span></label>
+        <div class="btn-row"><button class="btn btn-outline" onclick="goFamStep(3)">← Back</button><button class="btn btn-primary" id="f_submitBtn" onclick="submitFamily()">Submit Family Enrollment <span class="btn-arrow">→</span></button></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SUCCESS -->
+<div id="successScreen">
+  <div class="success-ring">⚖️</div>
+  <div class="success-title" id="successTitle">Application Submitted!</div>
+  <p class="success-sub" id="successSub">We've received your information and will be in touch soon.</p>
+  <div class="ref-badge" id="refNum">—</div>
+  <div class="next-steps">
+    <h4>What Happens Next</h4>
+    <div class="next-step-item"><div class="next-step-num">1</div><span>Our team reviews your submission within 2–3 business days</span></div>
+    <div class="next-step-item"><div class="next-step-num">2</div><span>We'll contact you using your preferred method</span></div>
+    <div class="next-step-item"><div class="next-step-num">3</div><span>We'll schedule an orientation or intake call</span></div>
+  </div>
+</div>
+
+<!-- honeypots -->
+<input type="text" name="website" style="display:none;position:absolute;left:-9999px;" tabindex="-1" autocomplete="off">
+<input type="text" name="hp_field" style="display:none;position:absolute;left:-9999px;" tabindex="-1" autocomplete="off">
+
+<footer class="site-footer">
+  <div>Goals 4 My Life Inc. · Community Mentorship Program</div>
+  <div style="margin-top:6px;">Questions? Contact us at <a href="mailto:info@goalsformylife.com">info@goalsformylife.com</a></div>
+</footer>
+
+<div class="toast" id="mainToast"><div class="toast-dot"></div><span id="toastMsg">Form saved</span></div>
+
+</div><!-- /layer -->
+
+<script>
+// ============================================================
+// CONFIG — verified default submit token & notification routing
+// ============================================================
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyS9-k85bgOtu8pHrnEQrGFbCvizcK86a1G9leeRBPUV6anOjPLrDTobxPx60p_KEE/exec';
+const DEFAULT_TOKEN = 'pi_06b34e008be649089c0c0711';
+const NOTIFICATION_EMAIL = 'info@goalsformylife.com';
+
+// Guard storage access: on data:/file: URLs or restricted privacy modes,
+// localStorage throws and would otherwise abort the whole script.
+let SUBMIT_TOKEN = DEFAULT_TOKEN;
+try { SUBMIT_TOKEN = localStorage.getItem('g4ml_token') || DEFAULT_TOKEN; } catch (_) { SUBMIT_TOKEN = DEFAULT_TOKEN; }
+
+// ===== PARTICLE CANVAS (decorative) =====
+(function particles(){
+  const c = document.getElementById('particleCanvas'); if(!c) return;
+  const ctx = c.getContext('2d'); let w,h,pts;
+  function resize(){ w=c.width=innerWidth; h=c.height=innerHeight;
+    pts=Array.from({length:Math.min(60,Math.floor(w/28))},()=>({x:Math.random()*w,y:Math.random()*h,vx:(Math.random()-.5)*.3,vy:(Math.random()-.5)*.3,r:Math.random()*1.8+.4})); }
+  function tick(){ ctx.clearRect(0,0,w,h);
+    for(const p of pts){ p.x+=p.vx; p.y+=p.vy; if(p.x<0||p.x>w)p.vx*=-1; if(p.y<0||p.y>h)p.vy*=-1;
+      ctx.beginPath(); ctx.arc(p.x,p.y,p.r,0,6.28); ctx.fillStyle='rgba(224,48,48,0.5)'; ctx.fill(); }
+    requestAnimationFrame(tick); }
+  addEventListener('resize',resize); resize(); tick();
+})();
+
+// ===== FORM TYPE SELECTOR =====
+let activeForm = 'volunteer';
+function selectFormType(type){
+  activeForm = type;
+  document.getElementById('tabVolunteer').classList.toggle('active', type==='volunteer');
+  document.getElementById('tabFamily').classList.toggle('active', type==='family');
+  document.getElementById('volunteerForm').classList.toggle('active', type==='volunteer');
+  document.getElementById('familyForm').classList.toggle('active', type==='family');
+  document.getElementById('progFill').style.width = (type==='volunteer'?volStep:famStep)*25 + '%';
+  window.scrollTo({top:0,behavior:'smooth'});
+  if(type==='volunteer') setTimeout(initVolSig,60); else setTimeout(initFamSig,60);
+}
+
+// ===== TOAST =====
+let toastTimer;
+function toast(msg){ clearTimeout(toastTimer); document.getElementById('toastMsg').textContent=msg; document.getElementById('mainToast').classList.add('show'); toastTimer=setTimeout(()=>document.getElementById('mainToast').classList.remove('show'),3200); }
+
+// ===== VOLUNTEER STEP NAV =====
+let volStep = 1;
+function goVolStep(n){
+  if(n<1||n>4) return;
+  if(volStep===1 && n>1){
+    const name=document.getElementById('v_name').value.trim();
+    const phone=document.getElementById('v_phone').value.trim();
+    if(!name){ toast('⚠️ Please enter your name'); return; }
+    if(phone.replace(/\D/g,'').length<10){ toast('⚠️ Enter a valid 10-digit phone number'); return; }
+  }
+  document.getElementById('volStep'+volStep).classList.remove('active');
+  const oldNode=document.querySelector('#volStepsNav .step-node[data-step="'+volStep+'"]'); oldNode.classList.remove('active');
+  if(n>volStep) oldNode.classList.add('done');
+  volStep=n;
+  document.getElementById('volStep'+n).classList.add('active');
+  const newNode=document.querySelector('#volStepsNav .step-node[data-step="'+n+'"]'); newNode.classList.add('active');
+  if(n>1) newNode.classList.remove('done');
+  if(activeForm==='volunteer') document.getElementById('progFill').style.width=(n*25)+'%';
+  window.scrollTo({top:0,behavior:'smooth'});
+  if(n===4) setTimeout(initVolSig,80);
+}
+
+// ===== FAMILY STEP NAV =====
+let famStep = 1;
+function goFamStep(n){
+  if(n<1||n>4) return;
+  if(famStep===1 && n>1){
+    const name=document.getElementById('f_parentName').value.trim();
+    const phone=document.getElementById('f_phone').value.trim();
+    if(!name){ toast('⚠️ Please enter your name'); return; }
+    if(phone.replace(/\D/g,'').length<10){ toast('⚠️ Enter a valid 10-digit phone number'); return; }
+  }
+  document.getElementById('famStep'+famStep).classList.remove('active');
+  const oldNode=document.querySelector('#famStepsNav .step-node[data-step="'+famStep+'"]'); oldNode.classList.remove('active');
+  if(n>famStep) oldNode.classList.add('done');
+  famStep=n;
+  document.getElementById('famStep'+n).classList.add('active');
+  const newNode=document.querySelector('#famStepsNav .step-node[data-step="'+n+'"]'); newNode.classList.add('active');
+  if(n>1) newNode.classList.remove('done');
+  if(activeForm==='family') document.getElementById('progFill').style.width=(n*25)+'%';
+  window.scrollTo({top:0,behavior:'smooth'});
+  if(n===4) setTimeout(initFamSig,80);
+}
+
+// ===== AVAILABILITY GRID =====
+(function buildAvailGrid(){
+  const days=['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
+  const times=['Morning','Afternoon','Evening'];
+  const tbody=document.getElementById('v_availBody'); if(!tbody) return;
+  days.forEach((day,di)=>{ const tr=document.createElement('tr'); tr.innerHTML='<td>'+day+'</td>';
+    times.forEach((time,ti)=>{ const id='av_'+di+'_'+ti; const td=document.createElement('td');
+      td.innerHTML='<div class="avail-cell"><input type="checkbox" id="'+id+'" data-day="'+day+'" data-time="'+time+'"><label for="'+id+'">✓</label></div>'; tr.appendChild(td); });
+    tbody.appendChild(tr); });
+})();
+
+// ===== SIGNATURE PADS =====
+let vHasSig=false,vSigInit=false,vSigCtx;
+let fHasSig=false,fSigInit=false,fSigCtx;
+function initVolSig(){ if(vSigInit) return; const canvas=document.getElementById('v_sigCanvas'); if(!canvas||canvas.offsetWidth===0) return;
+  canvas.width=canvas.parentElement.offsetWidth; vSigCtx=canvas.getContext('2d');
+  vSigCtx.strokeStyle='#ff5555'; vSigCtx.lineWidth=2.5; vSigCtx.lineCap='round'; vSigCtx.lineJoin='round'; vSigCtx.shadowColor='rgba(224,48,48,0.5)'; vSigCtx.shadowBlur=6;
+  attachSigEvents(canvas,vSigCtx,()=>{ vHasSig=true; document.getElementById('v_sigPlaceholder').style.opacity='0'; }); vSigInit=true; }
+function initFamSig(){ if(fSigInit) return; const canvas=document.getElementById('f_sigCanvas'); if(!canvas||canvas.offsetWidth===0) return;
+  canvas.width=canvas.parentElement.offsetWidth; fSigCtx=canvas.getContext('2d');
+  fSigCtx.strokeStyle='#ff5555'; fSigCtx.lineWidth=2.5; fSigCtx.lineCap='round'; fSigCtx.lineJoin='round'; fSigCtx.shadowColor='rgba(224,48,48,0.5)'; fSigCtx.shadowBlur=6;
+  attachSigEvents(canvas,fSigCtx,()=>{ fHasSig=true; document.getElementById('f_sigPlaceholder').style.opacity='0'; }); fSigInit=true; }
+function attachSigEvents(canvas,ctx,onDraw){ let drawing=false;
+  function pos(e){ const r=canvas.getBoundingClientRect(); const src=e.touches?e.touches[0]:e; return {x:src.clientX-r.left,y:src.clientY-r.top}; }
+  canvas.addEventListener('mousedown',e=>{ drawing=true; ctx.beginPath(); const p=pos(e); ctx.moveTo(p.x,p.y); });
+  canvas.addEventListener('mousemove',e=>{ if(!drawing) return; const p=pos(e); ctx.lineTo(p.x,p.y); ctx.stroke(); onDraw(); });
+  canvas.addEventListener('mouseup',()=>drawing=false);
+  canvas.addEventListener('mouseleave',()=>drawing=false);
+  canvas.addEventListener('touchstart',e=>{ e.preventDefault(); drawing=true; ctx.beginPath(); const p=pos(e); ctx.moveTo(p.x,p.y); },{passive:false});
+  canvas.addEventListener('touchmove',e=>{ e.preventDefault(); if(!drawing) return; const p=pos(e); ctx.lineTo(p.x,p.y); ctx.stroke(); onDraw(); },{passive:false});
+  canvas.addEventListener('touchend',()=>drawing=false);
+}
+function clearVolSig(){ const c=document.getElementById('v_sigCanvas'); vSigCtx&&vSigCtx.clearRect(0,0,c.width,c.height); vHasSig=false; document.getElementById('v_sigPlaceholder').style.opacity='1'; }
+function clearFamSig(){ const c=document.getElementById('f_sigCanvas'); fSigCtx&&fSigCtx.clearRect(0,0,c.width,c.height); fHasSig=false; document.getElementById('f_sigPlaceholder').style.opacity='1'; }
+
+// ===== COLLECT =====
+function collectVolunteer(){
+  const skills=[]; for(let i=1;i<=18;i++){ const el=document.getElementById('sk'+i); if(el&&el.checked) skills.push(el.value); }
+  const population=[]; for(let i=1;i<=6;i++){ const el=document.getElementById('pop'+i); if(el&&el.checked) population.push(el.value); }
+  const availability=[]; document.querySelectorAll('#v_availBody input[type=checkbox]').forEach(cb=>{ if(cb.checked) availability.push(cb.dataset.day+' '+cb.dataset.time); });
+  const willing=[]; for(let i=1;i<=5;i++){ const el=document.getElementById('wt'+i); if(el&&el.checked) willing.push(el.value); }
+  const radio=n=>document.querySelector('input[name="'+n+'"]:checked')?.value||'';
+  return {
+    action:'submit_volunteer',
+    token:SUBMIT_TOKEN,
+    notifyEmail:NOTIFICATION_EMAIL,
+    adminEmail:NOTIFICATION_EMAIL,
+    refNum:'VOL-'+Date.now().toString(36).toUpperCase().slice(-6),
+    name:document.getElementById('v_name').value, date:document.getElementById('v_date').value,
+    address:document.getElementById('v_address').value, city:document.getElementById('v_city').value,
+    state:document.getElementById('v_state').value, zip:document.getElementById('v_zip').value,
+    phone:document.getElementById('v_phone').value, email:document.getElementById('v_email').value,
+    preferredContact:radio('v_preferredContact'), dob:document.getElementById('v_dob').value,
+    occupation:document.getElementById('v_occupation').value, employer:document.getElementById('v_employer').value,
+    emergencyContactName:document.getElementById('v_emergencyName').value,
+    emergencyContactRelationship:document.getElementById('v_emergencyRelationship').value,
+    emergencyContactPhone:document.getElementById('v_emergencyPhone').value,
+    whyBecome:document.getElementById('v_whyBecome').value, giftsToShare:document.getElementById('v_giftsToShare').value,
+    skills:skills.join(', '), preferredPopulation:population.join(', '), availability:availability.join(', '),
+    volunteeredBefore:radio('v_volunteeredBefore'), mentoredYouth:radio('v_mentoredYouth'),
+    willingToComplete:willing.join(', '),
+    ref1Name:document.getElementById('v_ref1Name').value, ref1Phone:document.getElementById('v_ref1Phone').value, ref1Relationship:document.getElementById('v_ref1Relationship').value,
+    ref2Name:document.getElementById('v_ref2Name').value, ref2Phone:document.getElementById('v_ref2Phone').value, ref2Relationship:document.getElementById('v_ref2Relationship').value,
+    hasSig:vHasSig?'YES':'NO', signDate:document.getElementById('v_signDate').value
+  };
+}
+function collectFamily(){
+  const helpWith=[]; for(let i=1;i<=10;i++){ const el=document.getElementById('hw'+i); if(el&&el.checked) helpWith.push(el.value); }
+  return {
+    action:'submit_family',
+    token:SUBMIT_TOKEN,
+    notifyEmail:NOTIFICATION_EMAIL,
+    adminEmail:NOTIFICATION_EMAIL,
+    refNum:'FAM-'+Date.now().toString(36).toUpperCase().slice(-6),
+    parentName:document.getElementById('f_parentName').value, phone:document.getElementById('f_phone').value,
+    email:document.getElementById('f_email').value, address:document.getElementById('f_address').value,
+    emergencyContact:document.getElementById('f_emergencyContact').value,
+    childNames:document.getElementById('f_childNames').value, childDob:document.getElementById('f_childDob').value,
+    school:document.getElementById('f_school').value, grade:document.getElementById('f_grade').value,
+    medicalConcerns:document.getElementById('f_medicalConcerns').value, allergies:document.getElementById('f_allergies').value,
+    transportationNeeds:document.getElementById('f_transportationNeeds').value,
+    goals:document.getElementById('f_goals').value, childStrengths:document.getElementById('f_childStrengths').value,
+    challenges:document.getElementById('f_challenges').value, youthEnjoy:document.getElementById('f_youthEnjoy').value,
+    favSubject:document.getElementById('f_favSubject').value, favHobby:document.getElementById('f_favHobby').value,
+    dreamJob:document.getElementById('f_dreamJob').value, favSport:document.getElementById('f_favSport').value,
+    favMusic:document.getElementById('f_favMusic').value, helpWith:helpWith.join(', '),
+    hasSig:fHasSig?'YES':'NO', signDate:document.getElementById('f_signDate').value
+  };
+}
+
+// ===== TRANSMIT (POST then GET fallback) =====
+async function transmitPayload(payload){
+  const urlEncoded=new URLSearchParams(payload).toString();
+  try { await fetch(SCRIPT_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:urlEncoded}); return true; }
+  catch(err){ try { await fetch(SCRIPT_URL+'?'+urlEncoded,{method:'GET',mode:'no-cors'}); return true; } catch(_){ return false; } }
+}
+
+async function submitVolunteer(){
+  if(!vHasSig){ toast('⚠️ Please sign the form'); return; }
+  if(!document.getElementById('v_consentCheck').checked){ toast('⚠️ Please accept the Commitment Agreement'); return; }
+  const btn=document.getElementById('v_submitBtn'); btn.disabled=true; btn.textContent='Submitting…';
+  const data=collectVolunteer(); await transmitPayload(data);
+  showSuccess(data.refNum,'Volunteer Application Submitted!','Thank you for stepping up to mentor. Our team will review your application and contact you soon.');
+}
+async function submitFamily(){
+  if(!fHasSig){ toast('⚠️ Please sign the form'); return; }
+  if(!document.getElementById('f_consentCheck').checked){ toast('⚠️ Please accept the consent terms'); return; }
+  const btn=document.getElementById('f_submitBtn'); btn.disabled=true; btn.textContent='Submitting…';
+  const data=collectFamily(); await transmitPayload(data);
+  showSuccess(data.refNum,'Family Enrollment Submitted!',"We've received your enrollment. Our team will reach out soon.");
+}
+
+function showSuccess(refNum,title,sub){
+  document.querySelectorAll('.form-panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.steps-nav').forEach(n=>n.style.display='none');
+  document.getElementById('heroSection').style.display='none';
+  document.getElementById('formTypeTabs').style.display='none';
+  document.getElementById('progFill').style.width='100%';
+  document.getElementById('refNum').textContent=refNum;
+  document.getElementById('successTitle').textContent=title;
+  document.getElementById('successSub').textContent=sub;
+  document.getElementById('successScreen').style.display='block';
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+// ===== INIT =====
+window.addEventListener('load',()=>{
+  const today=new Date().toISOString().split('T')[0];
+  document.getElementById('v_date').value=today;
+  document.getElementById('v_signDate').value=today;
+  document.getElementById('f_signDate').value=today;
+  setTimeout(initVolSig,200);
+});
+</script>
+</body>
+</html>

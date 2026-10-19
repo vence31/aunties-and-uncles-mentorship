@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#080808">
+<title>Aunties & Uncles — Applications Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#080808; --bg2:#0e0808; --bg3:#150c0c;
+  --glass-b:rgba(200,50,50,0.12);
+  --red:#e03030; --red2:#ff5555; --red-glow:rgba(224,48,48,0.35); --red-dim:rgba(224,48,48,0.15);
+  --gold:#d4a847; --gold2:#f0c96a;
+  --grn:#4fc978;
+  --txt:#f5eded; --txt2:rgba(245,237,237,0.65); --txt3:rgba(245,237,237,0.35);
+  --r-sm:8px; --r-md:14px; --r-lg:22px; --r-xl:32px;
+  --ease:cubic-bezier(0.25,0.1,0.25,1); --bounce:cubic-bezier(0.34,1.56,0.64,1);
+  --sh-sm:0 2px 8px rgba(0,0,0,0.4); --sh-md:0 8px 24px rgba(0,0,0,0.5); --sh-lg:0 20px 60px rgba(0,0,0,0.6);
+  --sh-red:0 0 30px rgba(224,48,48,0.2);
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--txt);min-height:100vh;line-height:1.6;position:relative;overflow-x:hidden;}
+body::before{content:'';position:fixed;inset:0;background:
+  radial-gradient(ellipse at 15% 25%,rgba(220,40,40,0.16) 0%,transparent 45%),
+  radial-gradient(ellipse at 85% 75%,rgba(180,20,20,0.10) 0%,transparent 45%);z-index:0;animation:meshPulse 12s ease-in-out infinite alternate;}
+@keyframes meshPulse{0%{opacity:.7;transform:scale(1);}100%{opacity:1;transform:scale(1.12);}}
+body::after{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.04'/%3E%3C/svg%3E");z-index:1;pointer-events:none;}
+.layer{position:relative;z-index:2;}
+
+/* HEADER */
+.hdr{position:sticky;top:0;z-index:200;background:rgba(8,4,4,0.9);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-bottom:1px solid var(--glass-b);box-shadow:0 1px 0 rgba(224,48,48,0.08),var(--sh-sm);}
+.hdr-inner{max-width:1240px;margin:0 auto;padding:0 28px;height:68px;display:flex;align-items:center;justify-content:space-between;gap:16px;}
+.logo{display:flex;align-items:center;gap:14px;text-decoration:none;}
+.brand-wrap{width:46px;height:46px;background:linear-gradient(135deg,var(--red),#ff6060);border-radius:14px;display:flex;align-items:center;justify-content:center;box-shadow:var(--sh-red);animation:brandPulse 3s ease-in-out infinite;}
+@keyframes brandPulse{0%,100%{box-shadow:0 0 20px rgba(224,48,48,0.3);}50%{box-shadow:0 0 40px rgba(224,48,48,0.6);}}
+.brand-svg{width:26px;height:26px;fill:none;stroke:#fff;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+.logo-text{font-family:'Syne',sans-serif;font-size:19px;font-weight:700;background:linear-gradient(135deg,var(--red2),var(--gold2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;letter-spacing:-0.3px;}
+.logo-sub{font-size:11px;color:var(--txt3);letter-spacing:2px;text-transform:uppercase;margin-top:1px;}
+.hdr-right{display:flex;align-items:center;gap:12px;}
+.updated{font-size:11px;color:var(--txt3);text-align:right;font-family:'JetBrains Mono',monospace;}
+.btn-refresh{display:inline-flex;align-items:center;gap:8px;background:rgba(224,48,48,0.1);border:1px solid rgba(224,48,48,0.25);color:var(--red2);border-radius:100px;padding:9px 18px;font-size:13px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s;}
+.btn-refresh:hover{background:rgba(224,48,48,0.18);border-color:var(--red);}
+.btn-refresh.spinning svg{animation:spin 1s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+.btn-new-app{display:inline-flex;align-items:center;gap:6px;background:linear-gradient(135deg,var(--red),#d41f1f);color:#fff;border-radius:100px;padding:9px 18px;font-size:13px;font-weight:700;text-decoration:none;font-family:'Syne',sans-serif;box-shadow:0 2px 10px rgba(224,48,48,0.3);transition:all .2s;}
+.btn-new-app:hover{transform:translateY(-1px);box-shadow:0 4px 15px rgba(224,48,48,0.5);}
+
+/* WRAP */
+.wrap{max-width:1240px;margin:0 auto;padding:32px 28px 60px;}
+.page-title{font-family:'Syne',sans-serif;font-size:clamp(24px,4vw,34px);font-weight:800;letter-spacing:-0.5px;margin-bottom:6px;}
+.page-title span{background:linear-gradient(135deg,var(--red),var(--red2) 50%,var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.page-sub{color:var(--txt2);font-size:15px;margin-bottom:28px;}
+
+/* STAT CARDS */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:28px;}
+@media(max-width:780px){.stats{grid-template-columns:1fr 1fr;}}
+.stat-card{background:linear-gradient(145deg,rgba(20,10,10,0.9),rgba(12,6,6,0.95));border:1px solid var(--glass-b);border-radius:var(--r-lg);padding:22px 24px;position:relative;overflow:hidden;transition:transform .25s var(--ease),box-shadow .25s;}
+.stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(224,48,48,0.35),transparent);}
+.stat-card:hover{transform:translateY(-3px);box-shadow:var(--sh-md),0 0 40px rgba(224,48,48,0.08);}
+.stat-icon{width:40px;height:40px;border-radius:11px;background:linear-gradient(135deg,rgba(224,48,48,0.2),rgba(224,48,48,0.06));border:1px solid rgba(224,48,48,0.22);display:flex;align-items:center;justify-content:center;font-size:19px;margin-bottom:14px;}
+.stat-num{font-family:'Syne',sans-serif;font-size:32px;font-weight:800;line-height:1;background:linear-gradient(135deg,var(--red2),var(--gold2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.stat-label{font-size:12px;color:var(--txt3);text-transform:uppercase;letter-spacing:1.3px;margin-top:8px;}
+
+/* CONTROLS */
+.controls{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:18px;}
+.tabs{display:flex;gap:6px;background:rgba(20,10,10,0.8);border:1px solid var(--glass-b);border-radius:100px;padding:5px;}
+.tab{padding:9px 20px;border-radius:100px;font-size:13px;font-weight:600;color:var(--txt2);cursor:pointer;border:none;background:transparent;font-family:'DM Sans',sans-serif;transition:all .2s;display:flex;align-items:center;gap:8px;}
+.tab.active{background:linear-gradient(135deg,var(--red),#d41f1f);color:#fff;box-shadow:0 2px 12px rgba(224,48,48,0.35);}
+.tab .count{background:rgba(255,255,255,0.15);border-radius:100px;padding:1px 8px;font-size:11px;font-family:'JetBrains Mono',monospace;}
+.search-wrap{flex:1;min-width:200px;position:relative;}
+.search-wrap svg{position:absolute;left:14px;top:50%;transform:translateY(-50%);width:16px;height:16px;stroke:var(--txt3);fill:none;stroke-width:2;}
+#search{width:100%;background:rgba(255,255,255,0.03);border:1.5px solid rgba(224,48,48,0.12);border-radius:var(--r-md);padding:11px 16px 11px 40px;color:var(--txt);font-family:'DM Sans',sans-serif;font-size:14px;outline:none;transition:all .2s;}
+#search:focus{border-color:var(--red);background:rgba(224,48,48,0.05);box-shadow:0 0 0 3px rgba(224,48,48,0.1);}
+.btn-export{display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,0.03);border:1.5px solid rgba(255,255,255,0.1);color:var(--txt2);border-radius:var(--r-md);padding:11px 18px;font-size:13px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s;}
+.btn-export:hover{border-color:rgba(224,48,48,0.3);color:var(--red2);}
+
+/* TABLE */
+.table-card{background:linear-gradient(145deg,rgba(20,10,10,0.9),rgba(12,6,6,0.95));border:1px solid var(--glass-b);border-radius:var(--r-xl);overflow:hidden;box-shadow:var(--sh-lg);}
+.table-scroll{overflow-x:auto;}
+table{width:100%;border-collapse:collapse;}
+thead th{text-align:left;font-size:11px;color:var(--txt3);text-transform:uppercase;letter-spacing:1.2px;font-weight:600;padding:16px 18px;border-bottom:1px solid var(--glass-b);white-space:nowrap;position:sticky;top:0;background:rgba(14,8,8,0.98);}
+tbody td{padding:15px 18px;font-size:14px;color:var(--txt2);border-bottom:1px solid rgba(255,255,255,0.03);white-space:nowrap;}
+tbody tr{cursor:pointer;transition:background .15s;}
+tbody tr:hover{background:rgba(224,48,48,0.05);}
+tbody tr:last-child td{border-bottom:none;}
+.ref-cell{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--red2);}
+.name-cell{color:var(--txt);font-weight:600;}
+.pill-badge{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:100px;font-size:11px;font-weight:600;}
+.pill-yes{background:rgba(79,201,120,0.12);border:1px solid rgba(79,201,120,0.3);color:var(--grn);}
+.pill-no{background:rgba(224,48,48,0.1);border:1px solid rgba(224,48,48,0.25);color:var(--red2);}
+.empty{padding:70px 28px;text-align:center;color:var(--txt3);}
+.empty .big{font-size:40px;margin-bottom:14px;opacity:.5;}
+.loading{padding:70px 28px;text-align:center;color:var(--txt3);}
+.spinner{width:36px;height:36px;border:3px solid rgba(224,48,48,0.15);border-top-color:var(--red);border-radius:50%;margin:0 auto 16px;animation:spin .8s linear infinite;}
+
+/* MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.75);backdrop-filter:blur(6px);z-index:500;display:none;align-items:flex-start;justify-content:center;padding:40px 20px;overflow-y:auto;}
+.modal-overlay.show{display:flex;}
+.modal{background:linear-gradient(145deg,rgba(24,12,12,0.98),rgba(14,7,7,0.99));border:1px solid rgba(224,48,48,0.25);border-radius:var(--r-xl);max-width:720px;width:100%;box-shadow:var(--sh-lg),0 0 60px rgba(224,48,48,0.1);animation:modalIn .35s var(--bounce);overflow:hidden;}
+@keyframes modalIn{from{opacity:0;transform:translateY(20px) scale(.97);}to{opacity:1;transform:translateY(0) scale(1);}}
+.modal-hdr{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:24px 28px;border-bottom:1px solid var(--glass-b);position:sticky;top:0;background:rgba(20,10,10,0.95);}
+.modal-title{font-family:'Syne',sans-serif;font-size:20px;font-weight:700;}
+.modal-ref{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--red2);margin-top:2px;}
+.modal-close{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);color:var(--txt2);width:34px;height:34px;border-radius:10px;cursor:pointer;font-size:18px;transition:all .2s;flex-shrink:0;}
+.modal-close:hover{border-color:var(--red);color:var(--red2);}
+.modal-body{padding:24px 28px;max-height:65vh;overflow-y:auto;}
+.detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px 24px;}
+@media(max-width:560px){.detail-grid{grid-template-columns:1fr;}}
+.detail-item.full{grid-column:1/-1;}
+.detail-label{font-size:11px;color:var(--txt3);text-transform:uppercase;letter-spacing:1px;margin-bottom:3px;}
+.detail-val{font-size:14px;color:var(--txt);word-break:break-word;white-space:pre-wrap;}
+.detail-val.empty-val{color:var(--txt3);font-style:italic;}
+.modal-body::-webkit-scrollbar,.table-scroll::-webkit-scrollbar{height:7px;width:7px;}
+.modal-body::-webkit-scrollbar-thumb,.table-scroll::-webkit-scrollbar-thumb{background:rgba(224,48,48,0.3);border-radius:4px;}
+
+/* TOAST */
+.toast{position:fixed;bottom:28px;right:28px;background:rgba(20,10,10,0.95);border:1px solid rgba(224,48,48,0.2);border-radius:var(--r-md);padding:12px 20px;font-size:13px;color:var(--txt2);box-shadow:var(--sh-md);z-index:999;display:flex;align-items:center;gap:10px;transform:translateY(80px);opacity:0;transition:all .3s var(--bounce);}
+.toast.show{transform:translateY(0);opacity:1;}
+.toast-dot{width:6px;height:6px;border-radius:50%;background:var(--red);}
+
+/* FOOTER */
+.site-footer { text-align:center; padding:30px 20px; font-size:12px; color:var(--txt3); border-top:1px solid var(--glass-b); margin-top:40px; }
+.site-footer a { color:var(--red2); text-decoration:none; margin:0 8px; }
+.site-footer a:hover { text-decoration:underline; }
+</style>
+</head>
+<body>
+<div class="layer">
+
+<header class="hdr">
+  <div class="hdr-inner">
+    <a href="dashboard.html" class="logo">
+      <div class="brand-wrap"><svg class="brand-svg" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></div>
+      <div><div class="logo-text">Goals 4 My Life</div><div class="logo-sub">Applications Dashboard</div></div>
+    </a>
+    <div class="hdr-right">
+      <div class="updated" id="updatedAt">—</div>
+      <button class="btn-refresh" id="refreshBtn" onclick="loadData()">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+        Refresh
+      </button>
+      <a href="index.html" class="btn-new-app">+ New Application</a>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+  <h1 class="page-title">Application <span>Registry</span></h1>
+  <p class="page-sub">Live submissions from the Aunties &amp; Uncles mentorship intake forms.</p>
+
+  <!-- STATS -->
+  <div class="stats">
+    <div class="stat-card"><div class="stat-icon">📋</div><div class="stat-num" id="statTotal">0</div><div class="stat-label">Total Applications</div></div>
+    <div class="stat-card"><div class="stat-icon">👵👴</div><div class="stat-num" id="statVol">0</div><div class="stat-label">Volunteer Mentors</div></div>
+    <div class="stat-card"><div class="stat-icon">👨‍👩‍👧</div><div class="stat-num" id="statFam">0</div><div class="stat-label">Family Enrollments</div></div>
+    <div class="stat-card"><div class="stat-icon">✍️</div><div class="stat-num" id="statSigned">0</div><div class="stat-label">Signed</div></div>
+  </div>
+
+  <!-- CONTROLS -->
+  <div class="controls">
+    <div class="tabs">
+      <button class="tab active" id="tabVol" onclick="switchTab('volunteers')">👵👴 Volunteers <span class="count" id="cntVol">0</span></button>
+      <button class="tab" id="tabFam" onclick="switchTab('families')">👨‍👩‍👧 Families <span class="count" id="cntFam">0</span></button>
+    </div>
+    <div class="search-wrap">
+      <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      <input type="text" id="search" placeholder="Search by name, phone, email, ref #…" oninput="render()">
+    </div>
+    <button class="btn-export" onclick="exportCSV()">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      Export CSV
+    </button>
+  </div>
+
+  <!-- TABLE -->
+  <div class="table-card">
+    <div class="table-scroll" id="tableScroll">
+      <div class="loading" id="loadingState"><div class="spinner"></div>Loading applications…</div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modalOverlay" onclick="if(event.target===this)closeModal()">
+  <div class="modal">
+    <div class="modal-hdr">
+      <div><div class="modal-title" id="modalTitle">Application</div><div class="modal-ref" id="modalRef">—</div></div>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body"><div class="detail-grid" id="modalBody"></div></div>
+  </div>
+</div>
+
+<footer class="site-footer">
+  <div>Goals 4 My Life Inc. · Community Mentorship Program Dashboard</div>
+  <div style="margin-top:6px;">Notifications routed to <a href="mailto:info@goalsformylife.com">info@goalsformylife.com</a></div>
+</footer>
+
+<div class="toast" id="toast"><div class="toast-dot"></div><span id="toastMsg"></span></div>
+
+</div>
+
+<script>
+// ===== CONFIG =====
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyS9-k85bgOtu8pHrnEQrGFbCvizcK86a1G9leeRBPUV6anOjPLrDTobxPx60p_KEE/exec';
+const READ_TOKEN = 'pi_read_cc6e17b892e449ffb406';
+
+let DATA = { volunteers: [], families: [] };
+let currentTab = 'volunteers';
+
+// Column layouts per tab: [key, label]
+const COLS = {
+  volunteers: [
+    ['refNum','Ref #'],['name','Name'],['phone','Phone'],['email','Email'],
+    ['city','City'],['state','ST'],['occupation','Occupation'],['timestamp','Submitted'],['hasSig','Signed']
+  ],
+  families: [
+    ['refNum','Ref #'],['parentName','Parent'],['phone','Phone'],['email','Email'],
+    ['childNames','Child(ren)'],['school','School'],['timestamp','Submitted'],['hasSig','Signed']
+  ]
+};
+
+// Friendly labels for the detail modal
+const LABELS = {
+  timestamp:'Submitted', refNum:'Reference #', formType:'Form Type', name:'Name', date:'Application Date',
+  address:'Address', city:'City', state:'State', zip:'ZIP', phone:'Phone', email:'Email',
+  preferredContact:'Preferred Contact', dob:'Date of Birth', occupation:'Occupation', employer:'Employer',
+  emergencyContactName:'Emergency Contact', emergencyContactRelationship:'Emergency Relationship',
+  emergencyContactPhone:'Emergency Phone', whyBecome:'Why Become a Mentor', giftsToShare:'Gifts to Share',
+  skills:'Skills', preferredPopulation:'Preferred Population', availability:'Availability',
+  volunteeredBefore:'Volunteered Before', mentoredYouth:'Mentored Youth', willingToComplete:'Willing to Complete',
+  ref1Name:'Reference 1 Name', ref1Phone:'Reference 1 Phone', ref1Relationship:'Reference 1 Relationship',
+  ref2Name:'Reference 2 Name', ref2Phone:'Reference 2 Phone', ref2Relationship:'Reference 2 Relationship',
+  hasSig:'Signed', signDate:'Signature Date',
+  parentName:'Parent/Guardian', emergencyContact:'Emergency Contact', childNames:'Child Name(s)',
+  childDob:'Child DOB', school:'School', grade:'Grade', medicalConcerns:'Medical Concerns', allergies:'Allergies',
+  transportationNeeds:'Transportation Needs', goals:'Goals', childStrengths:'Child Strengths',
+  challenges:'Challenges', youthEnjoy:'Youth Enjoys', favSubject:'Favorite Subject', favHobby:'Favorite Hobby',
+  dreamJob:'Dream Job', favSport:'Favorite Sport', favMusic:'Favorite Music', helpWith:'Help With'
+};
+// Long fields shown full-width in the modal
+const LONG = new Set(['whyBecome','giftsToShare','skills','preferredPopulation','availability','willingToComplete','address','goals','childStrengths','challenges','youthEnjoy','medicalConcerns','allergies','transportationNeeds','childNames','childDob','helpWith']);
+
+function toast(msg){ const t=document.getElementById('toast'); document.getElementById('toastMsg').textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),3000); }
+
+function fmtDate(v){
+  if(!v) return '';
+  const d=new Date(v); if(isNaN(d)) return v;
+  return d.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
+}
+function fmtDateTime(v){
+  if(!v) return '';
+  const d=new Date(v); if(isNaN(d)) return v;
+  return d.toLocaleString('en-US',{month:'short',day:'numeric',year:'numeric',hour:'numeric',minute:'2-digit'});
+}
+function esc(s){ return String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+
+async function loadData(){
+  const btn=document.getElementById('refreshBtn'); btn.classList.add('spinning');
+  try{
+    const url=SCRIPT_URL+'?action=get_intakes&token='+encodeURIComponent(READ_TOKEN)+'&_='+Date.now();
+    const res=await fetch(url,{cache:'no-store'});
+    const json=await res.json();
+    if(!json || json.success===false){ throw new Error(json && json.message ? json.message : 'Read failed'); }
+    DATA.volunteers = json.volunteers || [];
+    DATA.families = json.families || [];
+    document.getElementById('updatedAt').textContent = 'Updated '+fmtDateTime(json.updatedAt||new Date().toISOString());
+    updateStats(); render();
+  }catch(err){
+    document.getElementById('tableScroll').innerHTML='<div class="empty"><div class="big">⚠️</div>Could not load data.<br><span style="font-size:13px;color:var(--txt3)">'+esc(err.message)+'</span></div>';
+    toast('⚠️ '+err.message);
+  }finally{ btn.classList.remove('spinning'); }
+}
+
+function updateStats(){
+  const v=DATA.volunteers.length, f=DATA.families.length;
+  document.getElementById('statTotal').textContent=v+f;
+  document.getElementById('statVol').textContent=v;
+  document.getElementById('statFam').textContent=f;
+  const signed=[...DATA.volunteers,...DATA.families].filter(r=>String(r.hasSig).toUpperCase()==='YES').length;
+  document.getElementById('statSigned').textContent=signed;
+  document.getElementById('cntVol').textContent=v;
+  document.getElementById('cntFam').textContent=f;
+}
+
+function switchTab(tab){
+  currentTab=tab;
+  document.getElementById('tabVol').classList.toggle('active',tab==='volunteers');
+  document.getElementById('tabFam').classList.toggle('active',tab==='families');
+  render();
+}
+
+function filtered(){
+  const q=document.getElementById('search').value.trim().toLowerCase();
+  let rows=DATA[currentTab]||[];
+  if(q) rows=rows.filter(r=>Object.values(r).some(v=>String(v).toLowerCase().includes(q)));
+  // newest first
+  return rows.slice().sort((a,b)=>new Date(b.timestamp||0)-new Date(a.timestamp||0));
+}
+
+function render(){
+  const rows=filtered();
+  const cols=COLS[currentTab];
+  const scroll=document.getElementById('tableScroll');
+  if(!rows.length){
+    scroll.innerHTML='<div class="empty"><div class="big">'+(currentTab==='volunteers'?'👵👴':'👨‍👩‍👧')+'</div>No '+(currentTab==='volunteers'?'volunteer applications':'family enrollments')+' yet.</div>';
+    return;
+  }
+  let h='<table><thead><tr>';
+  cols.forEach(c=>h+='<th>'+c[1]+'</th>');
+  h+='</tr></thead><tbody>';
+  rows.forEach((r,i)=>{
+    h+='<tr onclick="openModal(\''+currentTab+'\','+DATA[currentTab].indexOf(r)+')">';
+    cols.forEach(c=>{
+      const key=c[0]; let val=r[key];
+      if(key==='timestamp') val=fmtDateTime(val);
+      let cls=''; let cell=esc(val);
+      if(key==='refNum') cls='ref-cell';
+      if(key==='name'||key==='parentName') cls='name-cell';
+      if(key==='hasSig'){ const yes=String(val).toUpperCase()==='YES'; cell='<span class="pill-badge '+(yes?'pill-yes':'pill-no')+'">'+(yes?'✓ Signed':'Unsigned')+'</span>'; }
+      h+='<td class="'+cls+'">'+(cell||'<span style="color:var(--txt3)">—</span>')+'</td>';
+    });
+    h+='</tr>';
+  });
+  h+='</tbody></table>';
+  scroll.innerHTML=h;
+}
+
+function openModal(tab,idx){
+  const r=DATA[tab][idx]; if(!r) return;
+  document.getElementById('modalTitle').textContent=(r.name||r.parentName||'Application');
+  document.getElementById('modalRef').textContent=(r.refNum||'')+' · '+(r.formType||(tab==='volunteers'?'Volunteer':'Family'))+' · '+fmtDateTime(r.timestamp);
+  const order=Object.keys(r);
+  let h='';
+  order.forEach(key=>{
+    if(key==='formType') return;
+    let val=r[key];
+    if(key==='timestamp'||key==='date'||key==='dob'||key==='signDate') val=fmtDate(val)||'';
+    const label=LABELS[key]||key;
+    const full=LONG.has(key)?' full':'';
+    const emptyCls=(val===''||val==null)?' empty-val':'';
+    const disp=(val===''||val==null)?'—':esc(val);
+    h+='<div class="detail-item'+full+'"><div class="detail-label">'+esc(label)+'</div><div class="detail-val'+emptyCls+'">'+disp+'</div></div>';
+  });
+  document.getElementById('modalBody').innerHTML=h;
+  document.getElementById('modalOverlay').classList.add('show');
+}
+function closeModal(){ document.getElementById('modalOverlay').classList.remove('show'); }
+document.addEventListener('keydown',e=>{ if(e.key==='Escape') closeModal(); });
+
+function exportCSV(){
+  const rows=filtered(); if(!rows.length){ toast('Nothing to export'); return; }
+  const keys=Object.keys(rows[0]);
+  const head=keys.map(k=>LABELS[k]||k);
+  const lines=[head.join(',')];
+  rows.forEach(r=>lines.push(keys.map(k=>{ let v=r[k]==null?'':String(r[k]); if(/[",\n]/.test(v)) v='"'+v.replace(/"/g,'""')+'"'; return v; }).join(',')));
+  const blob=new Blob([lines.join('\n')],{type:'text/csv'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob);
+  a.download='aunties-uncles-'+currentTab+'-'+new Date().toISOString().slice(0,10)+'.csv';
+  a.click(); URL.revokeObjectURL(a.href);
+  toast('Exported '+rows.length+' '+currentTab);
+}
+
+loadData();
+// Auto-refresh every 60s — skipped while the tab is hidden or a detail modal is open.
+setInterval(() => {
+  if (document.hidden) return;
+  if (document.getElementById('modalOverlay').classList.contains('show')) return;
+  loadData();
+}, 60000);
+</script>
+</body>
+</html>
